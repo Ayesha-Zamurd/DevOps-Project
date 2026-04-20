@@ -21,3 +21,16 @@ jobs:
 
       - name: Push Image
         run: docker push ayeshazamurd/app
+
+      # ✅ NEW PART (EC2 DEPLOYMENT)
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            sudo docker pull ayeshazamurd/app
+            sudo docker stop app || true
+            sudo docker rm app || true
+            sudo docker run -d -p 80:80 --name app ayeshazamurd/app
